@@ -17,8 +17,8 @@ before_build:
 
 build:
   verbosity: minimal
-  project: Cogito.Autofac.sln
+  project: Cogito.ServiceModel.sln
 
 artifacts:
   - path: pkg\*.nupkg
-    name: Cogito.Autofac
+    name: Cogito.ServiceModel
