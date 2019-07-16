@@ -5,6 +5,10 @@
     <Authors>Jerome Haltom</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Provides Microsoft.Extensions.DependencyInjection support for WCF.</Description>
+    <PackageLicenseUrl>https://raw.github.com/wasabii/Cogito/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/wasabii/Cogito.ServiceModel</PackageProjectUrl>
+    <PackageIconUrl>https://cloverluxussc.blob.core.windows.net/public/cogito-nuget-icon.png</PackageIconUrl>
+    <Copyright>Jerome Haltom</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
