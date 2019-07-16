@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
+    <Authors>Jerome Haltom</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>Provides Microsoft.Extensions.DependencyInjection support for WCF.</Description>
   </PropertyGroup>
 
   <ItemGroup>
