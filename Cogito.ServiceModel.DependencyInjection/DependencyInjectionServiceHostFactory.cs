@@ -3,11 +3,13 @@ using System.ServiceModel;
 
 namespace Cogito.ServiceModel.DependencyInjection
 {
+
     /// <summary>
-    /// Creates <see cref="System.ServiceModel.ServiceHost"/> instances for WCF.
+    /// Creates <see cref="ServiceHost"/> instances for WCF.
     /// </summary>
-    public class AutofacServiceHostFactory : AutofacHostFactory
+    public class DependencyInjectionServiceHostFactory : DependencyInjectionHostFactory
     {
+
         /// <summary>
         /// Creates a <see cref="T:System.ServiceModel.ServiceHost"/> for a specified type of service with a specific base address.
         /// </summary>
@@ -16,16 +18,15 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// <returns>
         /// A <see cref="T:System.ServiceModel.ServiceHost"/> for the type of service specified with a specific base address.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// Thrown if <paramref name="serviceType" /> or <paramref name="baseAddresses" /> is <see langword="null" />.
         /// </exception>
         protected override ServiceHost CreateServiceHost(Type serviceType, Uri[] baseAddresses)
         {
             if (serviceType == null)
-                throw new ArgumentNullException("serviceType");
-
+                throw new ArgumentNullException(nameof(serviceType));
             if (baseAddresses == null)
-                throw new ArgumentNullException("baseAddresses");
+                throw new ArgumentNullException(nameof(baseAddresses));
 
             return new ServiceHost(serviceType, baseAddresses);
         }
@@ -41,12 +42,13 @@ namespace Cogito.ServiceModel.DependencyInjection
         protected override ServiceHost CreateSingletonServiceHost(object singletonInstance, Uri[] baseAddresses)
         {
             if (singletonInstance == null)
-                throw new ArgumentNullException("singletonInstance");
-
+                throw new ArgumentNullException(nameof(singletonInstance));
             if (baseAddresses == null)
-                throw new ArgumentNullException("baseAddresses");
+                throw new ArgumentNullException(nameof(baseAddresses));
 
             return new ServiceHost(singletonInstance, baseAddresses);
         }
+
     }
+
 }

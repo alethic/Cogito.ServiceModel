@@ -8,42 +8,33 @@ using System.ServiceModel.Dispatcher;
 
 namespace Cogito.ServiceModel.DependencyInjection
 {
+
     /// <summary>
-    /// Sets the instance provider to an AutofacInstanceProvider.
+    /// Sets the instance provider to an <see cref="DependencyInjectionInstanceProvider"/>.
     /// </summary>
-    public class AutofacDependencyInjectionServiceBehavior : IServiceBehavior
+    public class DependencyInjectionServiceBehavior : IServiceBehavior
     {
 
-        private readonly ILifetimeScope _rootLifetimeScope;
-        private readonly ServiceImplementationData _serviceData;
-
+        readonly IServiceProvider provider;
+        readonly ServiceImplementationData serviceData;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AutofacDependencyInjectionServiceBehavior"/> class.
+        /// Initializes a new instance of the <see cref="DependencyInjectionServiceBehavior"/> class.
         /// </summary>
-        /// <param name="rootLifetimeScope">
+        /// <param name="provider">
         /// The container from which service implementations should be resolved.
         /// </param>
         /// <param name="serviceData">
         /// Data about which service type should be hosted and how to resolve
         /// the type to use for the service implementation.
         /// </param>
-        /// <exception cref="System.ArgumentNullException">
-        /// Thrown if <paramref name="rootLifetimeScope" /> or <paramref name="serviceData" /> is <see langword="null" />.
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if <paramref name="provider" /> or <paramref name="serviceData" /> is <see langword="null" />.
         /// </exception>
-        public AutofacDependencyInjectionServiceBehavior(ILifetimeScope rootLifetimeScope, ServiceImplementationData serviceData)
+        public DependencyInjectionServiceBehavior(IServiceProvider provider, ServiceImplementationData serviceData)
         {
-            if (rootLifetimeScope == null)
-            {
-                throw new ArgumentNullException("rootLifetimeScope");
-            }
-            if (serviceData == null)
-            {
-                throw new ArgumentNullException("serviceData");
-            }
-
-            _rootLifetimeScope = rootLifetimeScope;
-            _serviceData = serviceData;
+            this.provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            this.serviceData = serviceData ?? throw new ArgumentNullException(nameof(serviceData));
         }
 
         /// <summary>
@@ -53,6 +44,7 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// <param name="serviceHostBase">The service host that is currently being constructed.</param>
         public void Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
         {
+
         }
 
         /// <summary>
@@ -63,9 +55,12 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// <param name="endpoints">The service endpoints.</param>
         /// <param name="bindingParameters">Custom objects to which binding elements have access.</param>
         public void AddBindingParameters(
-            ServiceDescription serviceDescription, ServiceHostBase serviceHostBase,
-            Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters)
+            ServiceDescription serviceDescription,
+            ServiceHostBase serviceHostBase,
+            Collection<ServiceEndpoint> endpoints,
+            BindingParameterCollection bindingParameters)
         {
+
         }
 
         /// <summary>
@@ -80,31 +75,25 @@ namespace Cogito.ServiceModel.DependencyInjection
         public void ApplyDispatchBehavior(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase)
         {
             if (serviceDescription == null)
-            {
-                throw new ArgumentNullException("serviceDescription");
-            }
+                throw new ArgumentNullException(nameof(serviceDescription));
             if (serviceHostBase == null)
-            {
-                throw new ArgumentNullException("serviceHostBase");
-            }
+                throw new ArgumentNullException(nameof(serviceHostBase));
 
-            var implementedContracts =
-                (from ep in serviceDescription.Endpoints
-                 where ep.Contract.ContractType.IsAssignableFrom(_serviceData.ServiceTypeToHost)
-                 select ep.Contract.Name).ToArray();
+            var implementedContracts = serviceDescription.Endpoints
+                 .Where(ep => ep.Contract.ContractType.IsAssignableFrom(serviceData.ServiceTypeToHost))
+                 .Select(ep => ep.Contract.Name)
+                 .ToArray();
 
-            var instanceProvider = new AutofacInstanceProvider(_rootLifetimeScope, _serviceData);
+            var instanceProvider = new DependencyInjectionInstanceProvider(provider, serviceData);
 
-            var endpointDispatchers =
-                from cd in serviceHostBase.ChannelDispatchers.OfType<ChannelDispatcher>()
-                from ed in cd.Endpoints
-                where implementedContracts.Contains(ed.ContractName)
-                select ed;
+            var endpointDispatchers = serviceHostBase.ChannelDispatchers.OfType<ChannelDispatcher>()
+                .SelectMany(i => i.Endpoints)
+                .Where(i => implementedContracts.Contains(i.ContractName));
 
             foreach (var ed in endpointDispatchers)
-            {
                 ed.DispatchRuntime.InstanceProvider = instanceProvider;
-            }
         }
+
     }
+
 }

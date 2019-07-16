@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Cogito.ServiceModel.DependencyInjection
+﻿namespace Cogito.ServiceModel.DependencyInjection
 {
+
     /// <summary>
     /// Defines a strategy for resolving which service type should be
     /// used for hosting vs. which type is the actual service implementation.
     /// </summary>
     public interface IServiceImplementationDataProvider
     {
+
         /// <summary>
         /// Gets data about a service implementation.
         /// </summary>
@@ -19,10 +17,12 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// implementation.
         /// </param>
         /// <returns>
-        /// A <see cref="Cogito.ServiceModel.DependencyInjection.ServiceImplementationData"/>
+        /// A <see cref="ServiceImplementationData"/>
         /// object containing information about which type to use in
         /// the service host and how to resolve the implementation.
         /// </returns>
         ServiceImplementationData GetServiceImplementationData(string value);
+
     }
+
 }

@@ -1,22 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Cogito.ServiceModel.DependencyInjection
 {
+
     /// <summary>
     /// Contains data about a WCF service implementation.
     /// </summary>
     /// <remarks>
     /// <para>
     /// This data transfer object class is used in conjunction with
-    /// <see cref="Cogito.ServiceModel.DependencyInjection.IServiceImplementationDataProvider"/>
+    /// <see cref="IServiceImplementationDataProvider"/>
     /// implementations for resolving service implementation instance information.
     /// </para>
     /// </remarks>
-    /// <seealso cref="Cogito.ServiceModel.DependencyInjection.IServiceImplementationDataProvider"/>
+    /// <seealso cref="IServiceImplementationDataProvider"/>
     public class ServiceImplementationData
     {
+
         /// <summary>
         /// Gets or sets the string used to generate the data.
         /// </summary>
@@ -45,20 +45,21 @@ namespace Cogito.ServiceModel.DependencyInjection
         public Type ServiceTypeToHost { get; set; }
 
         /// <summary>
-        /// Gets or sets a mechanism that allows the <see cref="AutofacInstanceContext"/>
+        /// Gets or sets a mechanism that allows the <see cref="DependencyInjectionInstanceContext"/>
         /// to get the actual implementation for a service.
         /// </summary>
         /// <value>
         /// An <see cref="System.Func{T,U}"/> that takes in a lifetime scope returns
-        /// an <see cref="System.Object"/> that is the implementation type for the
+        /// an <see cref="object"/> that is the implementation type for the
         /// given service. This is the object that the service host will use
-        /// and should be assignable from the <see cref="Cogito.ServiceModel.DependencyInjection.ServiceImplementationData.ServiceTypeToHost"/>.
+        /// and should be assignable from the <see cref="ServiceTypeToHost"/>.
         /// </value>
-        public Func<ILifetimeScope, object> ImplementationResolver
+        public Func<IServiceProvider, object> ImplementationResolver
         {
             get;
-
             set;
         }
+
     }
+
 }

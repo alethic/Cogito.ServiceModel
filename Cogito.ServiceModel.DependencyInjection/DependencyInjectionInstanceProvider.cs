@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
@@ -10,16 +9,16 @@ namespace Cogito.ServiceModel.DependencyInjection
     /// <summary>
     /// Retrieves service instances from an Autofac container.
     /// </summary>
-    public class AutofacInstanceProvider : IInstanceProvider
+    public class DependencyInjectionInstanceProvider : IInstanceProvider
     {
 
-        readonly ILifetimeScope _rootLifetimeScope;
-        readonly ServiceImplementationData _serviceData;
+        readonly IServiceProvider provider;
+        readonly ServiceImplementationData serviceData;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AutofacInstanceProvider"/> class.
+        /// Initializes a new instance of the <see cref="DependencyInjectionInstanceProvider"/> class.
         /// </summary>
-        /// <param name="rootLifetimeScope">
+        /// <param name="provider">
         /// The lifetime scope from which service instances should be resolved.
         /// </param>
         /// <param name="serviceData">
@@ -27,22 +26,17 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// implementation instance.
         /// </param>
         /// <exception cref="System.ArgumentNullException">
-        /// Thrown if <paramref name="rootLifetimeScope" /> or <paramref name="serviceData" /> is <see langword="null" />.
+        /// Thrown if <paramref name="provider" /> or <paramref name="serviceData" /> is <see langword="null" />.
         /// </exception>
-        public AutofacInstanceProvider(ILifetimeScope rootLifetimeScope, ServiceImplementationData serviceData)
+        public DependencyInjectionInstanceProvider(IServiceProvider provider, ServiceImplementationData serviceData)
         {
-            if (rootLifetimeScope == null)
-            {
-                throw new ArgumentNullException("rootLifetimeScope");
-            }
-
+            if (provider == null)
+                throw new ArgumentNullException(nameof(provider));
             if (serviceData == null)
-            {
-                throw new ArgumentNullException("serviceData");
-            }
+                throw new ArgumentNullException(nameof(serviceData));
 
-            _rootLifetimeScope = rootLifetimeScope;
-            _serviceData = serviceData;
+            this.provider = provider;
+            this.serviceData = serviceData;
         }
 
         /// <summary>
@@ -67,16 +61,14 @@ namespace Cogito.ServiceModel.DependencyInjection
         public object GetInstance(InstanceContext instanceContext, Message message)
         {
             if (instanceContext == null)
-            {
-                throw new ArgumentNullException("instanceContext");
-            }
+                throw new ArgumentNullException(nameof(instanceContext));
 
-            var autofacInstanceContext = new AutofacInstanceContext(_rootLifetimeScope);
+            var autofacInstanceContext = new DependencyInjectionInstanceContext(provider);
             instanceContext.Extensions.Add(autofacInstanceContext);
 
             try
             {
-                return autofacInstanceContext.Resolve(_serviceData);
+                return autofacInstanceContext.Resolve(serviceData);
             }
             catch (Exception)
             {
@@ -87,24 +79,21 @@ namespace Cogito.ServiceModel.DependencyInjection
         }
 
         /// <summary>
-        /// Called when an <see cref="System.ServiceModel.InstanceContext"/> object recycles a service object.
+        /// Called when an <see cref="InstanceContext"/> object recycles a service object.
         /// </summary>
         /// <param name="instanceContext">The service's instance context.</param>
         /// <param name="instance">The service object to be recycled.</param>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// Thrown if <paramref name="instanceContext" /> is <see langword="null" />.
         /// </exception>
         public void ReleaseInstance(InstanceContext instanceContext, object instance)
         {
             if (instanceContext == null)
-            {
-                throw new ArgumentNullException("instanceContext");
-            }
-            var extension = instanceContext.Extensions.Find<AutofacInstanceContext>();
+                throw new ArgumentNullException(nameof(instanceContext));
+
+            var extension = instanceContext.Extensions.Find<DependencyInjectionInstanceContext>();
             if (extension != null)
-            {
                 extension.Dispose();
-            }
         }
 
     }

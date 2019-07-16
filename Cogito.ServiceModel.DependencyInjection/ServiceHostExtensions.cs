@@ -1,96 +1,58 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.ServiceModel;
-using Autofac.Core;
+
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Cogito.ServiceModel.DependencyInjection
 {
+
     /// <summary>
     /// Adds dependency injection related methods to service hosts.
     /// </summary>
     public static class ServiceHostExtensions
     {
+
         /// <summary>
         /// Adds the custom service behavior required for dependency injection.
         /// </summary>
-        /// <typeparam name="T">The web service contract type.</typeparam>
+        /// <typeparam name="TService">The service contract type.</typeparam>
         /// <param name="serviceHost">The service host.</param>
-        /// <param name="container">The container.</param>
-        public static void AddDependencyInjectionBehavior<T>(this ServiceHostBase serviceHost, ILifetimeScope container)
+        /// <param name="provider">The container.</param>
+        public static void AddDependencyInjectionBehavior<TService>(this ServiceHostBase serviceHost, IServiceProvider provider)
         {
-            AddDependencyInjectionBehavior(serviceHost, typeof(T), container);
+            AddDependencyInjectionBehavior(serviceHost, typeof(TService), provider);
         }
 
         /// <summary>
         /// Adds the custom service behavior required for dependency injection.
         /// </summary>
         /// <param name="serviceHost">The service host.</param>
-        /// <param name="contractType">The web service contract type.</param>
-        /// <param name="container">The container.</param>
-        public static void AddDependencyInjectionBehavior(this ServiceHostBase serviceHost, Type contractType, ILifetimeScope container)
-        {
-            AddDependencyInjectionBehavior(serviceHost, contractType, container, Enumerable.Empty<Parameter>());
-        }
-
-        /// <summary>
-        /// Adds the custom service behavior required for dependency injection.
-        /// </summary>
-        /// <typeparam name="T">The web service contract type.</typeparam>
-        /// <param name="serviceHost">The service host.</param>
-        /// <param name="container">The container.</param>
-        /// <param name="parameters">Parameters for the instance.</param>
-        public static void AddDependencyInjectionBehavior<T>(this ServiceHostBase serviceHost, ILifetimeScope container, IEnumerable<Parameter> parameters)
-        {
-            AddDependencyInjectionBehavior(serviceHost, typeof(T), container, parameters);
-        }
-
-        /// <summary>
-        /// Adds the custom service behavior required for dependency injection.
-        /// </summary>
-        /// <param name="serviceHost">The service host.</param>
-        /// <param name="contractType">The web service contract type.</param>
-        /// <param name="container">The container.</param>
-        /// <param name="parameters">Parameters for the instance.</param>
-        public static void AddDependencyInjectionBehavior(this ServiceHostBase serviceHost, Type contractType, ILifetimeScope container, IEnumerable<Parameter> parameters)
+        /// <param name="serviceType">The service contract type.</param>
+        /// <param name="provider">The container.</param>
+        public static void AddDependencyInjectionBehavior(this ServiceHostBase serviceHost, Type serviceType, IServiceProvider provider)
         {
             if (serviceHost == null)
-            {
-                throw new ArgumentNullException("serviceHost");
-            }
-            if (contractType == null)
-            {
-                throw new ArgumentNullException("contractType");
-            }
-            if (container == null)
-            {
-                throw new ArgumentNullException("container");
-            }
-            if (parameters == null)
-            {
-                throw new ArgumentNullException("parameters");
-            }
+                throw new ArgumentNullException(nameof(serviceHost));
+            if (serviceType == null)
+                throw new ArgumentNullException(nameof(serviceType));
+            if (provider == null)
+                throw new ArgumentNullException(nameof(provider));
 
             var serviceBehavior = serviceHost.Description.Behaviors.Find<ServiceBehaviorAttribute>();
             if (serviceBehavior != null && serviceBehavior.InstanceContextMode == InstanceContextMode.Single)
                 return;
 
-            IComponentRegistration registration;
-            if (!container.ComponentRegistry.TryGetRegistration(new TypedService(contractType), out registration))
+            var data = new ServiceImplementationData()
             {
-                var message = string.Format(CultureInfo.CurrentCulture, ServiceHostExtensionsResources.ContractTypeNotRegistered, contractType.FullName);
-                throw new ArgumentException(message, "contractType");
-            }
-            var data = new ServiceImplementationData
-            {
-                ConstructorString = contractType.AssemblyQualifiedName,
-                ServiceTypeToHost = contractType,
-                ImplementationResolver = l => l.ResolveComponent(registration, parameters)
+                ConstructorString = serviceType.AssemblyQualifiedName,
+                ServiceTypeToHost = serviceType,
+                ImplementationResolver = l => l.GetRequiredService(serviceType)
             };
 
-            var behavior = new AutofacDependencyInjectionServiceBehavior(container, data);
+            var behavior = new DependencyInjectionServiceBehavior(provider, data);
             serviceHost.Description.Behaviors.Add(behavior);
         }
+
     }
+
 }

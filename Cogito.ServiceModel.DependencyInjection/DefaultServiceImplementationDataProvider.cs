@@ -1,19 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.ServiceModel;
-using Autofac.Core;
-using Autofac.Core.Lifetime;
+
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Cogito.ServiceModel.DependencyInjection
 {
+
     /// <summary>
     /// Simple resolver for WCF service implementations. Allows for single-tenant
     /// handling of named or typed services.
     /// </summary>
     public class DefaultServiceImplementationDataProvider : IServiceImplementationDataProvider
     {
+
         /// <summary>
         /// Gets data about a service implementation.
         /// </summary>
@@ -23,7 +24,7 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// implementation.
         /// </param>
         /// <returns>
-        /// A <see cref="Cogito.ServiceModel.DependencyInjection.ServiceImplementationData"/>
+        /// A <see cref="ServiceImplementationData"/>
         /// object containing information about which type to use in
         /// the service host and which type to use to resolve the implementation.
         /// </returns>
@@ -36,10 +37,10 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// </para>
         /// </remarks>
         /// <exception cref="System.InvalidOperationException">
-        /// Thrown if the <see cref="Cogito.ServiceModel.DependencyInjection.AutofacHostFactory.Container"/>
+        /// Thrown if the <see cref="DependencyInjectionHostFactory.Provider"/>
         /// is <see langword="null" />;
         /// if the service indicated by <paramref name="value" />
-        /// is not registered with the <see cref="Cogito.ServiceModel.DependencyInjection.AutofacHostFactory.Container"/>;
+        /// is not registered with the <see cref="DependencyInjectionHostFactory.Provider"/>;
         /// or if the service is a singleton that isn't registered as a singleton.
         /// </exception>
         /// <exception cref="System.ArgumentNullException">
@@ -51,37 +52,32 @@ namespace Cogito.ServiceModel.DependencyInjection
         public virtual ServiceImplementationData GetServiceImplementationData(string value)
         {
             if (value == null)
-            {
                 throw new ArgumentNullException("value");
-            }
             if (value.Length == 0)
-            {
                 throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, Properties.Resources.ArgumentException_StringEmpty, "value"));
-            }
-            if (AutofacHostFactory.Container == null)
-            {
-                throw new InvalidOperationException(AutofacHostFactoryResources.ContainerIsNull);
-            }
+            if (DependencyInjectionHostFactory.Provider == null)
+                throw new InvalidOperationException(DependencyInjectionHostFactoryResources.ContainerIsNull);
+
             IComponentRegistration registration = null;
-            if (!AutofacHostFactory.Container.ComponentRegistry.TryGetRegistration(new KeyedService(value, typeof(object)), out registration))
+            if (!DependencyInjectionHostFactory.Provider.ComponentRegistry.TryGetRegistration(new KeyedService(value, typeof(object)), out registration))
             {
                 Type serviceType = Type.GetType(value, false);
                 if (serviceType != null)
                 {
-                    AutofacHostFactory.Container.ComponentRegistry.TryGetRegistration(new TypedService(serviceType), out registration);
+                    DependencyInjectionHostFactory.Provider.ComponentRegistry.TryGetRegistration(new TypedService(serviceType), out registration);
                 }
             }
 
             if (registration == null)
             {
-                throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, AutofacHostFactoryResources.ServiceNotRegistered, value));
+                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, DependencyInjectionHostFactoryResources.ServiceNotRegistered, value));
             }
 
             var data = new ServiceImplementationData
             {
                 ConstructorString = value,
                 ServiceTypeToHost = registration.Activator.LimitType,
-                ImplementationResolver = l => l.ResolveComponent(registration, Enumerable.Empty<Parameter>())
+                ImplementationResolver = l => l.GetRequiredService(registration)
             };
 
             var implementationType = registration.Activator.LimitType;
@@ -89,7 +85,7 @@ namespace Cogito.ServiceModel.DependencyInjection
             {
                 if (!IsRegistrationSingleInstance(registration))
                 {
-                    throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, AutofacHostFactoryResources.ServiceMustBeSingleInstance, implementationType.FullName));
+                    throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, DependencyInjectionHostFactoryResources.ServiceMustBeSingleInstance, implementationType.FullName));
                 }
 
                 data.HostAsSingleton = true;
@@ -98,7 +94,7 @@ namespace Cogito.ServiceModel.DependencyInjection
             {
                 if (IsRegistrationSingleInstance(registration))
                 {
-                    throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, AutofacHostFactoryResources.ServiceMustNotBeSingleInstance, implementationType.FullName));
+                    throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, DependencyInjectionHostFactoryResources.ServiceMustNotBeSingleInstance, implementationType.FullName));
                 }
             }
 
@@ -119,5 +115,7 @@ namespace Cogito.ServiceModel.DependencyInjection
 
             return behavior != null && behavior.InstanceContextMode == InstanceContextMode.Single;
         }
+
     }
+
 }
