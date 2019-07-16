@@ -61,7 +61,7 @@ namespace Cogito.ServiceModel.DependencyInjection {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The AutofacServiceHost.Container static property must be set before services can be instantiated..
+        ///   Looks up a localized string similar to The DependencyInjectionServiceHost.Container static property must be set before services can be instantiated..
         /// </summary>
         public static string ContainerIsNull {
             get {
@@ -88,7 +88,7 @@ namespace Cogito.ServiceModel.DependencyInjection {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The WCF service &apos;{0}&apos; has an InstanceContextMode of Single and is not registered as SingleInstance with the Autofac container..
+        ///   Looks up a localized string similar to The WCF service &apos;{0}&apos; has an InstanceContextMode of Single and is not registered as Single with the service provider..
         /// </summary>
         public static string ServiceMustBeSingleInstance {
             get {
@@ -97,7 +97,7 @@ namespace Cogito.ServiceModel.DependencyInjection {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The WCF service &apos;{0}&apos; does not have an InstanceContextMode of Single and is registered as SingleInstance with the Autofac container..
+        ///   Looks up a localized string similar to The WCF service &apos;{0}&apos; does not have an InstanceContextMode of Single and is registered as Single with the service provider..
         /// </summary>
         public static string ServiceMustNotBeSingleInstance {
             get {
@@ -106,7 +106,7 @@ namespace Cogito.ServiceModel.DependencyInjection {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The service &apos;{0}&apos; configured for WCF is not registered with the Autofac container..
+        ///   Looks up a localized string similar to The service &apos;{0}&apos; configured for WCF is not registered with the service provider..
         /// </summary>
         public static string ServiceNotRegistered {
             get {

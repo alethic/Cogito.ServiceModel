@@ -8,8 +8,7 @@ namespace Cogito.ServiceModel.DependencyInjection
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This data transfer object class is used in conjunction with
-    /// <see cref="IServiceImplementationDataProvider"/>
+    /// This data transfer object class is used in conjunction with <see cref="IServiceImplementationDataProvider"/>
     /// implementations for resolving service implementation instance information.
     /// </para>
     /// </remarks>
@@ -21,7 +20,7 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// Gets or sets the string used to generate the data.
         /// </summary>
         /// <value>
-        /// A <see cref="System.String"/> used to generate this service
+        /// A <see cref="string"/> used to generate this service
         /// implementation data.
         /// </value>
         public string ConstructorString { get; set; }
@@ -38,9 +37,8 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// Gets or sets the concrete type to host.
         /// </summary>
         /// <value>
-        /// A <see cref="System.Type"/> that indicates the type to pass to the
-        /// service host when it is initially created. This type must be a concrete
-        /// class and not an interface.
+        /// A <see cref="Type"/> that indicates the type to pass to the service host when it is initially created. This
+        /// type must be a concrete class and not an interface.
         /// </value>
         public Type ServiceTypeToHost { get; set; }
 

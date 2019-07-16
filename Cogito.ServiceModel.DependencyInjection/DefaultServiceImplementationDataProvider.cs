@@ -3,14 +3,11 @@ using System.Globalization;
 using System.Linq;
 using System.ServiceModel;
 
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Cogito.ServiceModel.DependencyInjection
 {
 
     /// <summary>
-    /// Simple resolver for WCF service implementations. Allows for single-tenant
-    /// handling of named or typed services.
+    /// Simple resolver for WCF service implementations.
     /// </summary>
     public class DefaultServiceImplementationDataProvider : IServiceImplementationDataProvider
     {
@@ -19,92 +16,84 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// Gets data about a service implementation.
         /// </summary>
         /// <param name="value">
-        /// The constructor string passed in to the service host factory
-        /// that is used to determine which type to host/use as a service
-        /// implementation.
+        /// The constructor string passed in to the service host factory that is used to determine which type to
+        /// host/use as a service implementation.
         /// </param>
         /// <returns>
-        /// A <see cref="ServiceImplementationData"/>
-        /// object containing information about which type to use in
-        /// the service host and which type to use to resolve the implementation.
+        /// A <see cref="ServiceImplementationData"/> object containing information about which type to use in the
+        /// service host and which type to use to resolve the implementation.
         /// </returns>
         /// <remarks>
         /// <para>
-        /// This resolver takes the constructor string stored in the .svc file
-        /// and resolves a matching keyed or typed service from the root
-        /// application container. That resolved type is used both for the
-        /// service host as well as the implementation type.
+        /// This resolver takes the constructor string stored in the .svc file and resolves a matching keyed or typed
+        /// service from the root application container. That resolved type is used both for the service host as well
+        /// as the implementation type.
         /// </para>
         /// </remarks>
-        /// <exception cref="System.InvalidOperationException">
-        /// Thrown if the <see cref="DependencyInjectionHostFactory.Provider"/>
-        /// is <see langword="null" />;
-        /// if the service indicated by <paramref name="value" />
-        /// is not registered with the <see cref="DependencyInjectionHostFactory.Provider"/>;
-        /// or if the service is a singleton that isn't registered as a singleton.
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if the <see cref="DependencyInjectionHostFactory.Provider"/> is <see langword="null" />; if the
+        /// service indicated by <paramref name="value" /> is not registered with the <see
+        /// cref="DependencyInjectionHostFactory.Provider"/>; or if the service is a singleton that isn't registered
+        /// as a singleton.
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// Thrown if <paramref name="value" /> is <see langword="null" />.
         /// </exception>
-        /// <exception cref="System.ArgumentException">
+        /// <exception cref="ArgumentException">
         /// Thrown if <paramref name="value" /> is empty.
         /// </exception>
         public virtual ServiceImplementationData GetServiceImplementationData(string value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             if (value.Length == 0)
-                throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, Properties.Resources.ArgumentException_StringEmpty, "value"));
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Properties.Resources.ArgumentException_StringEmpty, "value"));
             if (DependencyInjectionHostFactory.Provider == null)
                 throw new InvalidOperationException(DependencyInjectionHostFactoryResources.ContainerIsNull);
 
-            IComponentRegistration registration = null;
-            if (!DependencyInjectionHostFactory.Provider.ComponentRegistry.TryGetRegistration(new KeyedService(value, typeof(object)), out registration))
-            {
-                Type serviceType = Type.GetType(value, false);
-                if (serviceType != null)
-                {
-                    DependencyInjectionHostFactory.Provider.ComponentRegistry.TryGetRegistration(new TypedService(serviceType), out registration);
-                }
-            }
+            throw new NotImplementedException();
 
-            if (registration == null)
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, DependencyInjectionHostFactoryResources.ServiceNotRegistered, value));
-            }
+            //IComponentRegistration registration = null;
+            //if (!DependencyInjectionHostFactory.Provider.ComponentRegistry.TryGetRegistration(new KeyedService(value, typeof(object)), out registration))
+            //{
+            //    Type serviceType = Type.GetType(value, false);
+            //    if (serviceType != null)
+            //    {
+            //        DependencyInjectionHostFactory.Provider.ComponentRegistry.TryGetRegistration(new TypedService(serviceType), out registration);
+            //    }
+            //}
 
-            var data = new ServiceImplementationData
-            {
-                ConstructorString = value,
-                ServiceTypeToHost = registration.Activator.LimitType,
-                ImplementationResolver = l => l.GetRequiredService(registration)
-            };
+            //if (registration == null)
+            //    throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, DependencyInjectionHostFactoryResources.ServiceNotRegistered, value));
 
-            var implementationType = registration.Activator.LimitType;
-            if (IsSingletonWcfService(implementationType))
-            {
-                if (!IsRegistrationSingleInstance(registration))
-                {
-                    throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, DependencyInjectionHostFactoryResources.ServiceMustBeSingleInstance, implementationType.FullName));
-                }
+            //var data = new ServiceImplementationData
+            //{
+            //    ConstructorString = value,
+            //    ServiceTypeToHost = registration.Activator.LimitType,
+            //    ImplementationResolver = l => l.GetRequiredService(registration)
+            //};
 
-                data.HostAsSingleton = true;
-            }
-            else
-            {
-                if (IsRegistrationSingleInstance(registration))
-                {
-                    throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture, DependencyInjectionHostFactoryResources.ServiceMustNotBeSingleInstance, implementationType.FullName));
-                }
-            }
+            //var implementationType = registration.Activator.LimitType;
+            //if (IsSingletonWcfService(implementationType))
+            //{
+            //    if (!IsRegistrationSingleInstance(registration))
+            //        throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, DependencyInjectionHostFactoryResources.ServiceMustBeSingleInstance, implementationType.FullName));
 
-            return data;
+            //    data.HostAsSingleton = true;
+            //}
+            //else
+            //{
+            //    if (IsRegistrationSingleInstance(registration))
+            //        throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, DependencyInjectionHostFactoryResources.ServiceMustNotBeSingleInstance, implementationType.FullName));
+            //}
+
+            //return data;
         }
 
-        static bool IsRegistrationSingleInstance(IComponentRegistration registration)
-        {
-            return registration.Sharing == InstanceSharing.Shared && registration.Lifetime is RootScopeLifetime;
-        }
+        //static bool IsRegistrationSingleInstance(IComponentRegistration registration)
+        //{
+        //    return registration.Sharing == InstanceSharing.Shared && registration.Lifetime is RootScopeLifetime;
+        //}
 
         static bool IsSingletonWcfService(Type implementationType)
         {

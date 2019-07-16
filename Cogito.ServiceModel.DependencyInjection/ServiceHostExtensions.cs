@@ -17,7 +17,7 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// </summary>
         /// <typeparam name="TService">The service contract type.</typeparam>
         /// <param name="serviceHost">The service host.</param>
-        /// <param name="provider">The container.</param>
+        /// <param name="provider">The service provider.</param>
         public static void AddDependencyInjectionBehavior<TService>(this ServiceHostBase serviceHost, IServiceProvider provider)
         {
             AddDependencyInjectionBehavior(serviceHost, typeof(TService), provider);
@@ -28,7 +28,7 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// </summary>
         /// <param name="serviceHost">The service host.</param>
         /// <param name="serviceType">The service contract type.</param>
-        /// <param name="provider">The container.</param>
+        /// <param name="provider">The service provider.</param>
         public static void AddDependencyInjectionBehavior(this ServiceHostBase serviceHost, Type serviceType, IServiceProvider provider)
         {
             if (serviceHost == null)

@@ -25,8 +25,7 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// The container from which service implementations should be resolved.
         /// </param>
         /// <param name="serviceData">
-        /// Data about which service type should be hosted and how to resolve
-        /// the type to use for the service implementation.
+        /// Data about which service type should be hosted and how to resolve the type to use for the service implementation.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// Thrown if <paramref name="provider" /> or <paramref name="serviceData" /> is <see langword="null" />.
@@ -38,7 +37,8 @@ namespace Cogito.ServiceModel.DependencyInjection
         }
 
         /// <summary>
-        /// Provides the ability to inspect the service host and the service description to confirm that the service can run successfully.
+        /// Provides the ability to inspect the service host and the service description to confirm that the service
+        /// can run successfully.
         /// </summary>
         /// <param name="serviceDescription">The service description.</param>
         /// <param name="serviceHostBase">The service host that is currently being constructed.</param>

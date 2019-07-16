@@ -62,7 +62,7 @@ namespace Cogito.ServiceModel.DependencyInjection {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The AutofacServiceHost.Container static property must be set before services can be instantiated..
+        ///   Looks up a localized string similar to The DependencyInjectionServiceHost.Container static property must be set before services can be instantiated..
         /// </summary>
         public static string ContainerIsNull {
             get {
@@ -80,7 +80,7 @@ namespace Cogito.ServiceModel.DependencyInjection {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The service &apos;{0}&apos; configured for WCF is not registered with the Autofac container..
+        ///   Looks up a localized string similar to The service &apos;{0}&apos; configured for WCF is not registered with the service provider..
         /// </summary>
         public static string ServiceNotRegistered {
             get {

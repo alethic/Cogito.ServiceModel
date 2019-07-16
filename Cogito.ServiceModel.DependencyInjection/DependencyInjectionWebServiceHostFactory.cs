@@ -19,7 +19,7 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// <returns>
         /// A <see cref="WebServiceHost"/> for the type of service specified with a specific base address.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// Thrown if <paramref name="serviceType" /> or <paramref name="baseAddresses" /> is <see langword="null" />.
         /// </exception>
         protected override ServiceHost CreateServiceHost(Type serviceType, Uri[] baseAddresses)
@@ -49,5 +49,7 @@ namespace Cogito.ServiceModel.DependencyInjection
 
             return new WebServiceHost(singletonInstance, baseAddresses);
         }
+
     }
+
 }

@@ -61,7 +61,7 @@ namespace Cogito.ServiceModel.DependencyInjection {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The service contract type &apos;{0}&apos; has not been registered in the container..
+        ///   Looks up a localized string similar to The service contract type &apos;{0}&apos; has not been registered in the service provider..
         /// </summary>
         public static string ContractTypeNotRegistered {
             get {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Activation;
 
@@ -12,9 +11,8 @@ namespace Cogito.ServiceModel.DependencyInjection
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The Autofac service host factory allows you to change
-    /// the strategy by which service implementations are resolved. You do this by
-    /// setting the <see cref="ServiceImplementationDataProvider"/>
+    /// The dependency injection service host factory allows you to change the strategy by which service
+    /// implementations are resolved. You do this by setting the <see cref="ServiceImplementationDataProvider"/>
     /// with a strategy implementation.
     /// </para>
     /// <para>
@@ -57,14 +55,14 @@ namespace Cogito.ServiceModel.DependencyInjection
         /// Gets or sets the service implementation data strategy.
         /// </summary>
         /// <value>
-        /// An <see cref="Cogito.ServiceModel.DependencyInjection.IServiceImplementationDataProvider"/>
+        /// An <see cref="IServiceImplementationDataProvider"/>
         /// that will be used to determine the proper service implementation given
         /// a service constructor string.
         /// </value>
         public static IServiceImplementationDataProvider ServiceImplementationDataProvider { get; set; }
 
         /// <summary>
-        /// Creates a <see cref="System.ServiceModel.ServiceHost"/> with specific base addresses and initializes it with specified data.
+        /// Creates a <see cref="ServiceHost"/> with specific base addresses and initializes it with specified data.
         /// </summary>
         /// <param name="constructorString">The initialization data passed to the <see cref="ServiceHostBase"/> instance being constructed by the factory.</param>
         /// <param name="baseAddresses">The <see cref="Array"/> of type <see cref="Uri"/> that contains the base addresses for the service hosted.</param>
@@ -95,7 +93,7 @@ namespace Cogito.ServiceModel.DependencyInjection
             if (constructorString == null)
                 throw new ArgumentNullException(nameof(constructorString));
             if (constructorString.Length == 0)
-                throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, Properties.Resources.ArgumentException_StringEmpty, "constructorString"), "constructorString");
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Properties.Resources.ArgumentException_StringEmpty, nameof(constructorString)), nameof(constructorString));
             if (Provider == null)
                 throw new InvalidOperationException(DependencyInjectionHostFactoryResources.ContainerIsNull);
 
@@ -128,12 +126,12 @@ namespace Cogito.ServiceModel.DependencyInjection
         }
 
         /// <summary>
-        /// Creates a <see cref="System.ServiceModel.ServiceHost"/> for a specified type of service with a specific base address.
+        /// Creates a <see cref="ServiceHost"/> for a specified type of service with a specific base address.
         /// </summary>
         /// <param name="singletonInstance">Specifies the singleton service instance to host.</param>
-        /// <param name="baseAddresses">The <see cref="System.Array"/> of type <see cref="System.Uri"/> that contains the base addresses for the service hosted.</param>
+        /// <param name="baseAddresses">The <see cref="Array"/> of type <see cref="System.Uri"/> that contains the base addresses for the service hosted.</param>
         /// <returns>
-        /// A <see cref="System.ServiceModel.ServiceHost"/> for the singleton service instance specified with a specific base address.
+        /// A <see cref="ServiceHost"/> for the singleton service instance specified with a specific base address.
         /// </returns>
         protected abstract ServiceHost CreateSingletonServiceHost(object singletonInstance, Uri[] baseAddresses);
 
