@@ -2,10 +2,10 @@
     <PropertyGroup>
         <Authors>Jerome Haltom</Authors>
         <Company>Alethic Solutions</Company>
-        <PackageProjectUrl>https://github.com/alethic/Cogito.ServiceModel</PackageProjectUrl>
         <RepositoryUrl>https://github.com/alethic/Cogito.ServiceModel</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+        <PackageProjectUrl>https://github.com/alethic/Cogito.ServiceModel</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageIcon>icon.png</PackageIcon>
         <LangVersion>8.0</LangVersion>
     </PropertyGroup>
