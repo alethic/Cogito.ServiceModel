@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Provides Microsoft.Extensions.DependencyInjection support for WCF.</Description>
   </PropertyGroup>
 
